@@ -31,6 +31,10 @@ Hotel and booking/order data are local demo data. This app does not make hotel o
 
 Never commit `.env` or share API keys. `.env.example` is safe to commit because it contains placeholders only.
 
+## Publish a demo
+
+This repository includes a Dockerfile for hosting the Spring Boot app. For example, on Render, create a **Web Service** from this GitHub repository and choose the Docker runtime. Add `GOOGLE_API_KEY` in the hosting dashboard's environment settings; do not put the key in GitHub. After deployment, share the public HTTPS URL provided by the host. Users can open that URL on their phones without being on your local network.
+
 ## Example prompts
 
 - `What's the current weather in Zurich, Switzerland?`
