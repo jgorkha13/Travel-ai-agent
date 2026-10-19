@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title th:text="${appName} + ' — ' + ${appSubtitle}">Grand Voyager — Private AI Travel &amp; Concierge Desk</title>
     <meta name="description"
         content="A classic professional AI Travel Concierge powered by Spring Boot, Thymeleaf, and Gemini.">
@@ -29,7 +29,7 @@
         rel="stylesheet">
 
     <!-- Classic Chat Stylesheet -->
-    <link rel="stylesheet" th:href="@{/css/chat.css}" href="/css/chat.css">
+    <link rel="stylesheet" th:href="@{/css/chat.css(v=3)}" href="/css/chat.css?v=3">
 </head>
 
 <body>
@@ -212,7 +212,7 @@
                         <div class="input-box-row">
                             <label for="chat-input" class="visually-hidden">Your travel inquiry</label>
                             <textarea id="chat-input" class="chat-textarea"
-                                placeholder="Ask about trip ideas, live weather, sample hotels, or a flight search demo..."
+                                placeholder="Ask me about a trip, weather, hotels, or flights..."
                                 rows="2" maxlength="2000" required></textarea>
 
                             <button type="submit" class="send-btn" id="send-button" disabled
