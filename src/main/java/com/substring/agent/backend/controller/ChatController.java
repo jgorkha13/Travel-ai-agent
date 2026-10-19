@@ -3,8 +3,11 @@ package com.substring.agent.backend.controller;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.substring.agent.backend.service.ChatService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/chat")
 public class ChatController {
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
     private final ChatService chatService;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -32,7 +36,13 @@ public class ChatController {
         String chatId = conversationId == null || conversationId.isBlank()
                 ? java.util.UUID.randomUUID().toString()
                 : conversationId.trim();
-        return ResponseEntity.ok(chatService.chat(cleanMessage, chatId));
+        try {
+            return ResponseEntity.ok(chatService.chat(cleanMessage, chatId));
+        } catch (RuntimeException exception) {
+            logger.warn("Chat provider request failed", exception);
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE)
+                    .body("The AI service is temporarily busy. Please try again in a moment.");
+        }
     }
 
     private String extractMessage(String raw) {
