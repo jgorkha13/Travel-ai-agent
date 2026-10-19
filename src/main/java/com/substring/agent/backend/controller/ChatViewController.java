@@ -10,6 +10,7 @@ import java.util.List;
 public class ChatViewController {
 
     public record CapabilityItem(String title, String description, String icon, String sampleQuery) {}
+    public record FaqItem(String category, String question, String prompt) {}
 
     @GetMapping({"/", "/chat"})
     public String chatPage(Model model) {
@@ -19,41 +20,41 @@ public class ChatViewController {
 
         List<CapabilityItem> capabilities = List.of(
             new CapabilityItem(
-                "Flight Search Demo",
-                "Duffel test data may be synthetic",
-                "✈️",
-                "Find flights from New York to London for next Friday"
+                "Trip Planning",
+                "Ideas, itineraries, and travel tips",
+                "🧭",
+                "Plan a three-day itinerary for Rome, Italy"
             ),
             new CapabilityItem(
                 "Sample Hotels",
-                "Local example listings; not live availability",
+                "Three local examples; not live availability",
                 "🏨",
-                "Search top luxury hotels in Paris under $350 per night"
+                "Show sample hotel listings in Goa priced at 5000 or less per night"
             ),
             new CapabilityItem(
                 "Weather Intelligence",
-                "Live conditions and short-range forecasts",
+                "Current conditions and forecasts up to 15 days",
                 "🌤️",
-                "What is the weather forecast for Rome tomorrow?"
+                "What is the current weather in Rome, Italy?"
             ),
             new CapabilityItem(
-                "Sample Order Lookup",
-                "Local demo data; no ticket tracking",
+                "Demo Order Lookup",
+                "Try sample order 1042; no real booking data",
                 "📦",
-                "Check the status of order #1002"
+                "Look up demo order 1042 and tell me its current status"
             )
         );
 
         model.addAttribute("capabilities", capabilities);
 
-        List<String> starterPrompts = List.of(
-            "Find flights from NYC to Paris for next Monday",
-            "Recommend luxury hotels in Tokyo under $300 a night",
-            "What will the weather be like in Zurich this weekend?",
-            "Track booking status for order #1001"
+        List<FaqItem> faqs = List.of(
+            new FaqItem("Trip planning", "Plan a three-day trip to Rome", "Plan a three-day itinerary for Rome, Italy."),
+            new FaqItem("Live weather", "What is today's weather in Rome?", "What is the current weather in Rome, Italy?"),
+            new FaqItem("Sample hotels", "Show hotels in Goa under ₹5,000 a night", "Show sample hotel listings in Goa priced at 5000 or less per night."),
+            new FaqItem("Demo order", "Where is demo order 1042?", "Look up demo order 1042 and tell me its current status.")
         );
 
-        model.addAttribute("starterPrompts", starterPrompts);
+        model.addAttribute("faqs", faqs);
 
         return "chat";
     }

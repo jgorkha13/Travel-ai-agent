@@ -71,12 +71,12 @@
                 <!-- Suggested Inquiries Section -->
                 <div class="sidebar-section">
                     <div class="sidebar-section-title">
-                        <span>Curated Inquiries</span>
+                        <span>Frequently Asked</span>
                     </div>
                     <div class="suggestions-list">
-                        <button type="button" class="suggestion-btn" th:each="prompt : ${starterPrompts}"
-                            th:text="${prompt}" th:data-prompt="${prompt}">
-                            Find flights from NYC to London
+                        <button type="button" class="suggestion-btn" th:each="faq : ${faqs}"
+                            th:text="${faq.question}" th:data-prompt="${faq.prompt}">
+                            Plan a three-day trip to Rome
                         </button>
                     </div>
                 </div>
@@ -146,14 +146,17 @@
                         <div class="welcome-seal">⚜️</div>
                         <h3>Welcome to Grand Voyager</h3>
                         <p>
-                            Your AI travel assistant. Ask for trip ideas and itineraries, check live weather, explore
-                            sample hotel listings, or try a flight search demo. This app does not place reservations.
+                            I can plan itineraries, check current weather, show sample Goa hotels, and look up demo
+                            orders. Hotel listings and order records are examples, and I cannot place bookings.
                         </p>
 
-                        <div class="starter-chips-group">
-                            <button type="button" class="starter-chip" th:each="prompt : ${starterPrompts}"
-                                th:text="${prompt}" th:data-prompt="${prompt}">
-                                Sample Prompt
+                        <h4 class="faq-heading" id="faq-heading">Questions I can help with</h4>
+                        <div class="faq-grid" aria-labelledby="faq-heading">
+                            <button type="button" class="faq-card" th:each="faq : ${faqs}"
+                                th:data-prompt="${faq.prompt}">
+                                <span class="faq-category" th:text="${faq.category}">Trip planning</span>
+                                <span class="faq-question" th:text="${faq.question}">Plan a three-day trip to Rome</span>
+                                <span class="faq-ask">Ask this <span aria-hidden="true">→</span></span>
                             </button>
                         </div>
                     </div>
