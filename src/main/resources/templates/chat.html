@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" data-theme="dark">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${appName} + ' — ' + ${appSubtitle}">Grand Voyager — Private AI Travel &amp; Concierge Desk</title>
+    <meta name="description"
+        content="A classic professional AI Travel Concierge powered by Spring Boot, Thymeleaf, and Gemini.">
+    <meta name="color-scheme" content="dark light">
+
+    <!-- FOUC prevention script: Immediately applies stored theme or defaults to dark -->
+    <script>
+        (function () {
+            try {
+                const storedTheme = localStorage.getItem('color-scheme') || 'dark';
+                document.documentElement.setAttribute('data-theme', storedTheme);
+                const metaTheme = document.querySelector('meta[name="color-scheme"]');
+                if (metaTheme) metaTheme.content = storedTheme;
+            } catch (e) { }
+        })();
+    </script>
+
+    <!-- Google Fonts: Playfair Display for classic editorial elegance & Plus Jakarta Sans for crisp readability -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
+
+    <!-- Classic Chat Stylesheet -->
+    <link rel="stylesheet" th:href="@{/css/chat.css}" href="/css/chat.css">
+</head>
+
+<body>
+    <div class="app-layout">
+        <!-- ==========================================
+             SIDEBAR - Concierge Dossier & Capabilities
+             ========================================== -->
+        <aside class="sidebar" id="sidebar">
+            <!-- Sidebar Header -->
+            <div class="sidebar-header">
+                <div class="brand-crest">
+                    <span>GV</span>
+                </div>
+                <div class="brand-text">
+                    <h1 th:text="${appName}">Grand Voyager</h1>
+                    <p th:text="${appSubtitle}">Travel &amp; Concierge</p>
+                </div>
+            </div>
+
+            <!-- Sidebar Scrollable Content -->
+            <div class="sidebar-content">
+                <!-- Services Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">
+                        <span>Concierge Services</span>
+                    </div>
+                    <div class="capability-list">
+                        <button type="button" class="capability-card" th:each="cap : ${capabilities}"
+                            th:data-prompt="${cap.sampleQuery}" th:title="'Click to ask: ' + ${cap.sampleQuery}">
+                            <span class="capability-icon" th:text="${cap.icon}">✈️</span>
+                            <div class="capability-info">
+                                <h4 th:text="${cap.title}">Flights</h4>
+                                <p th:text="${cap.description}">Routes &amp; schedules</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Suggested Inquiries Section -->
+                <div class="sidebar-section">
+                    <div class="sidebar-section-title">
+                        <span>Curated Inquiries</span>
+                    </div>
+                    <div class="suggestions-list">
+                        <button type="button" class="suggestion-btn" th:each="prompt : ${starterPrompts}"
+                            th:text="${prompt}" th:data-prompt="${prompt}">
+                            Find flights from NYC to London
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Concierge Notes -->
+                <div class="concierge-note-card">
+                    <div class="concierge-note-header">
+                        <span>⚜️</span>
+                        <span>Private Travel Desk</span>
+                    </div>
+                    <p>Ask travel questions, check live weather, browse sample hotel data, or try the flight search demo.</p>
+                </div>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="sidebar-footer">
+                <div class="status-indicator-pill">
+                    <span class="pulse-dot"></span>
+                    <span th:text="${conciergeStatus}">Online &amp; Ready</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ==========================================
+             MAIN CHAT INTERFACE
+             ========================================== -->
+        <main class="chat-main">
+            <!-- Top Navigation / Header -->
+            <header class="chat-header">
+                <div class="header-left">
+                    <button type="button" class="sidebar-toggle-btn" id="sidebar-toggle-btn"
+                        aria-label="Toggle Concierge Menu">
+                        ☰
+                    </button>
+                    <div class="header-title-wrap">
+                        <div class="title-with-crest">
+                            <span class="mini-crest">GV</span>
+                            <h2 th:text="${appName} + ' Concierge'">Grand Voyager Concierge</h2>
+                        </div>
+                        <p>AI travel planning with live weather and clearly labeled demo data</p>
+                    </div>
+                </div>
+
+                <div class="header-actions">
+                    <!-- Dark / Light Mode Toggle Button -->
+                    <button type="button" class="theme-toggle-btn" id="theme-toggle-btn"
+                        aria-label="Toggle Dark / Light Mode" title="Toggle Theme">
+                        <span class="theme-icon theme-sun" aria-hidden="true">☀️</span>
+                        <span class="theme-icon theme-moon" aria-hidden="true">🌙</span>
+                        <span class="theme-label" id="theme-label">Theme</span>
+                    </button>
+
+                    <!-- Clear Chat History -->
+                    <button type="button" class="classic-btn-outline" id="clear-chat-btn"
+                        title="Clear current dialogue">
+                        <span>🧹</span>
+                        <span>Clear Chat</span>
+                    </button>
+                </div>
+            </header>
+
+            <!-- Scrollable Messages Stream -->
+            <section class="messages-container" id="messages-container" aria-live="polite">
+                <div class="messages-inner-wrapper" id="messages-list">
+                    <!-- Welcome Hero Card -->
+                    <div class="welcome-card" id="welcome-card">
+                        <div class="welcome-seal">⚜️</div>
+                        <h3>Welcome to Grand Voyager</h3>
+                        <p>
+                            Your AI travel assistant. Ask for trip ideas and itineraries, check live weather, explore
+                            sample hotel listings, or try a flight search demo. This app does not place reservations.
+                        </p>
+
+                        <div class="starter-chips-group">
+                            <button type="button" class="starter-chip" th:each="prompt : ${starterPrompts}"
+                                th:text="${prompt}" th:data-prompt="${prompt}">
+                                Sample Prompt
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Chat Messages will be appended here by chat.js -->
+                </div>
+
+                <!-- Typing / Activity Indicator -->
+                <div class="messages-inner-wrapper">
+                    <div class="message-row assistant typing-row" id="typing-indicator">
+                        <div class="message-avatar">GV</div>
+                        <div class="typing-bubble">
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                            <span class="typing-text" id="typing-status-text">Consulting travel databases &amp; flight
+                                manifests...</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Floating Scroll-to-Bottom Button -->
+            <button type="button" class="scroll-bottom-btn" id="scroll-bottom-btn" title="Scroll to bottom"
+                aria-label="Scroll to bottom">
+                ↓
+            </button>
+
+            <!-- ==========================================
+                 BOTTOM MULTI-LINE TEXTAREA INPUT DOCK
+                 ========================================== -->
+            <footer class="chat-input-area">
+                <div class="input-container-inner">
+                    <form class="chat-form" id="chat-form" autocomplete="off">
+                        <!-- Textarea Toolbar -->
+                        <div class="textarea-toolbar">
+                            <span class="textarea-badge">
+                                <span class="badge-icon">✍️</span> Travel Inquiry
+                            </span>
+                            <div class="textarea-tools-right">
+                                <span class="char-counter" id="char-counter">0 / 2000</span>
+                                <button type="button" class="tool-btn" id="clear-input-btn" title="Clear text"
+                                    style="display: none;">
+                                    ✕
+                                </button>
+                                <button type="button" class="tool-btn" id="expand-textarea-btn"
+                                    title="Expand / shrink editor">
+                                    ⛶
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Main Multi-line Textarea with Send Action -->
+                        <div class="input-box-row">
+                            <label for="chat-input" class="visually-hidden">Your travel inquiry</label>
+                            <textarea id="chat-input" class="chat-textarea"
+                                placeholder="Ask about trip ideas, live weather, sample hotels, or a flight search demo..."
+                                rows="2" maxlength="2000" required></textarea>
+
+                            <button type="submit" class="send-btn" id="send-button" disabled
+                                title="Send Inquiry (Enter or Cmd+Enter)">
+                                <svg viewBox="0 0 24 24" class="send-icon">
+                                    <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" />
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- Input Footer Hints -->
+                    <div class="input-footer-hints">
+                        <span class="input-hint-key">
+                            <span class="kbd-badge">Enter</span> to send &bull; <span class="kbd-badge">Shift +
+                                Enter</span> for new line &bull; <span class="kbd-badge">Cmd/Ctrl + Enter</span> submit
+                        </span>
+                        <span>API endpoint: <strong class="endpoint-pill">/chat</strong></span>
+                    </div>
+                </div>
+            </footer>
+        </main>
+    </div>
+
+    <!-- Classic Chat Client Logic -->
+    <script th:src="@{/js/chat.js}" src="/js/chat.js"></script>
+</body>
+
+</html>
